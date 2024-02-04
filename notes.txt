@@ -1,0 +1,245 @@
+
+
+
+
+
+Project Name : serverless-registration-Form
+
+
+
+-- using dynamodb and lambda 
+
+-- we use db table to store the submit response by the user 
+
+-- choose primary key widely , it is important and unique
+
+
+-- Step 1
+
+-- open dynamodb table 
+
+-- create table 
+
+
+ Table Name : registration-table
+
+ Partition key : email
+
+
+-- create table 
+
+
+
+
+-- Step 2
+
+-- create IAM role and add "dynamodbfullaccess"  and "cloudwatchfullaccess"permissions to this role 
+
+
+
+
+-- Step 3
+
+
+-- create lambda function that will handle form submission and store data in dynamodb table
+
+-- give name for function and select python , in change default execution role settings --> use an existing role --> add role for lambda 
+
+-- rest keep it default and create function 
+
+-- now write python code
+
+
+import json
+import boto3
+
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('registration-table')
+
+def lambda_handler(event, context):
+    # Get request body
+    print(event)
+
+    # Create new item in DynamoDB table
+    response = table.put_item(
+        Item={
+            'email': event['email'],
+            'name': event['name'],
+            'phone': event['phone'],
+            'password': event['password']
+        }
+    )
+
+    # Return response
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        'body': json.dumps({'message': 'Registration successful'})
+    }
+
+
+
+
+-- check index.html and I have those values to collect info from user if u want anything u can add 
+
+-- in js script once the user c.o submit form the values get collect data
+
+-- and also we will create request object and setup request
+
+-- now do save ur code in the lambda function 
+
+
+
+
+-- Step 4 
+
+
+-- now go and create items in the dynamodb table 
+
+-- email, name, phone, password 
+
+
+
+-- Step 5
+
+
+-- create API Gateway and enable CORS
+
+-- from this we will create API gateway endpoint and we will trigger our lambda function when ever our form is submit 
+
+-- we will also enable CORS endpoint to allow cross domain request from our front end , so we will define a post method for our API Gateway and configure it to trigger lambda function
+
+-- open API Gateway --> REST API  (not Private) --> New Api --> name of API --> create 
+
+-- this will create an API for me 
+
+-- now we have to create methods and Resources 
+
+A
+
+-- create Resource --> register is our resource name , and enable CORS
+
+-- /register --> that we have give in the set up Request section , so if u /register it will navigate to the page 
+
+
+B
+
+
+-- now create Methods 
+
+-- our method is post method , I.e we are going to post the data
+
+-- create Method --> method type is Post --> lambda function --> select lambda url in drop down menu 
+
+
+IMP : make sure u have to enable CORS 
+
+
+-- another thing we have to do is to deploy our API , once u deploy API it will provide one URL copy the url and u have to paste it in ur front code (js) in set up request section
+
+-- add url(post url)  in js script 
+
+Eg :  https://q0hhu3qy2h.execute-api.ap-south-1.amazonaws.com/test/register
+
+
+
+
+
+-- Step 6 
+
+
+-- now do test the form submission 
+
+-- open index.html form in the browser and give some dummy values 
+
+-- once u add url in js and try to give dumb values 
+
+
+-- u will get successfully inserted data in the dynamodb table --done 
+
+-- if u get error do refresh the page n try to give dummy values again 
+
+-- still u r getting error means u should check with the API URL 
+
+
+
+
+
+Explore : 
+
+
+u can also do this with the Ec2 instance and install httpd or 
+
+u can also do this upoload all ur files in s3 and do static web hosting 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
